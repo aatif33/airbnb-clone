@@ -1,31 +1,26 @@
 import { Link } from "react-router-dom";
 
 export default function ListingCard({ listing }) {
-  const { id, title, price, image, location, rating } = listing;
-
   return (
-    <Link to={`/listing/${id}`}>
-      <div className="bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
-        <img
-          src={image}
-          alt={title}
-          className="h-56 w-full object-cover"
-        />
+    <Link to={`/listing/${listing.id}`}>
+      <div className="min-w-[260px]">
+        <div className="relative">
+          <img
+            src={listing.image}
+            className="h-64 w-full object-cover rounded-2xl"
+          />
 
-        <div className="p-4 space-y-1">
-          <div className="flex items-center justify-between">
-            <h3 className="font-semibold text-lg">{title}</h3>
-            <span className="text-sm flex items-center gap-1">
-              ⭐ {rating}
-            </span>
-          </div>
+          <span className="absolute top-3 left-3 bg-white text-xs px-3 py-1 rounded-full font-medium">
+            Guest favourite
+          </span>
 
-          <p className="text-sm text-gray-500 flex items-center gap-1">
-            📍 {location}
-          </p>
+          <span className="absolute top-3 right-3 text-xl">♡</span>
+        </div>
 
-          <p className="text-gray-700">
-            ₹{price} <span className="text-sm text-gray-500">/ night</span>
+        <div className="mt-2">
+          <h3 className="font-medium">{listing.title}</h3>
+          <p className="text-sm text-gray-500">
+            ₹{listing.price} for 2 nights · ⭐ {listing.rating}
           </p>
         </div>
       </div>
