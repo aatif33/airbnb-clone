@@ -32,6 +32,10 @@ export default function Navbar({searchActive,setSearchActive}) {
         <Link to="/" className="text-2xl font-bold text-rose-500">
           airbnb
         </Link>
+        <Link to="/favorites" className="text-sm font-medium">
+  ❤️ Favorites
+</Link>
+
 
         <button className="bg-rose-500 text-white px-5 py-2 rounded-full">
           Login
