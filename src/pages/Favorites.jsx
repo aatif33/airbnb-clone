@@ -1,7 +1,7 @@
 import { listings } from "../data/listings";
 import { useFavorites } from "../context/FavoritesContext";
 import ListingCard from "../components/listings/ListingCard";
-
+import PageWrapper from "../components/common/PageWrapper";
 export default function Favorites() {
   const { favorites } = useFavorites();
 
@@ -10,6 +10,7 @@ export default function Favorites() {
   );
 
   return (
+    <PageWrapper>
     <section className="max-w-7xl mx-auto px-6 py-10">
       <h2 className="text-2xl font-semibold mb-6">Your favorites</h2>
 
@@ -25,5 +26,6 @@ export default function Favorites() {
         </div>
       )}
     </section>
+    </PageWrapper>
   );
 }

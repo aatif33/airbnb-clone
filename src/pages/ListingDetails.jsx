@@ -1,7 +1,7 @@
 import { useParams, Link } from "react-router-dom";
 import { listings } from "../data/listings";
 import { useState, useEffect } from "react";
-
+import PageWrapper from "../components/common/PageWrapper";
 export default function ListingDetails() {
   const { id } = useParams();
   const listing = listings.find((item) => item.id === Number(id));
@@ -48,6 +48,7 @@ export default function ListingDetails() {
   }, [paymentDone]);
 
   return (
+    <PageWrapper>
     <section className="max-w-6xl mx-auto px-6 py-10">
       <Link to="/" className="text-sm text-gray-500 mb-4 inline-block">
         ← Back
@@ -234,5 +235,6 @@ export default function ListingDetails() {
         </div>
       )}
     </section>
+    </PageWrapper>
   );
 }

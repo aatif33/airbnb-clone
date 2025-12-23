@@ -1,7 +1,7 @@
 import { listings } from "../data/listings";
 import ListingGrid from "../components/listings/ListingGrid";
 import { useSearch } from "../context/SearchContext";
-
+import PageWrapper from "../components/common/PageWrapper";
 const getCity = (location) =>
   location.split(",")[0].trim().toLowerCase();
 
@@ -33,6 +33,7 @@ export default function Home() {
   );
 
   return (
+    <PageWrapper>
     <div className="max-w-7xl mx-auto px-6 py-10 space-y-20">
 
       {bengaluru.length > 0 && (
@@ -74,7 +75,7 @@ export default function Home() {
           <ListingGrid listings={hills} />
         </section>
       )}
-
     </div>
+    </PageWrapper>
   );
 }
