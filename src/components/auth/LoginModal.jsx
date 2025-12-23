@@ -1,54 +1,59 @@
-import { motion } from "framer-motion";
+import { useState } from "react";
+import { useAuth } from "../../context/AuthContext";
 
 export default function LoginModal({ open, onClose }) {
+  const { login, signup } = useAuth();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+
   if (!open) return null;
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/40 flex items-center justify-center">
-      <motion.div
-        initial={{ scale: 0.9, opacity: 0 }}
-        animate={{ scale: 1, opacity: 1 }}
-        exit={{ scale: 0.9, opacity: 0 }}
-        transition={{ duration: 0.25 }}
-        className="bg-white rounded-2xl w-[400px] p-6"
-      >
-        <h2 className="text-xl font-semibold mb-4">Log in or sign up</h2>
+    <div className="fixed inset-0 bg-black/40 z-50 flex items-center justify-center">
+      <div className="bg-white p-6 rounded-xl w-80">
+        <h2 className="text-lg font-semibold mb-4">Login / Signup</h2>
+
+        {error && (
+          <p className="text-sm text-red-500 mb-2">{error}</p>
+        )}
 
         <input
-          type="text"
-          placeholder="Phone number"
-          className="w-full border rounded-lg p-3 mb-3"
+          className="border w-full p-2 rounded mb-3"
+          placeholder="Email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
         />
 
         <input
-          type="password"
+          className="border w-full p-2 rounded mb-4"
           placeholder="Password"
-          className="w-full border rounded-lg p-3 mb-4"
+          type="password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
         />
-
-        <button className="w-full bg-rose-500 text-white py-3 rounded-lg mb-3">
-          Continue
-        </button>
-
-        <div className="text-center text-sm text-gray-500 mb-3">
-          or
-        </div>
-
-        <button className="w-full border py-3 rounded-lg mb-2">
-          Continue with Google
-        </button>
-
-        <button className="w-full border py-3 rounded-lg">
-          Continue with Microsoft
-        </button>
 
         <button
-          onClick={onClose}
-          className="mt-4 text-sm text-gray-500 underline w-full"
+          onClick={async () => {
+            setError("");
+            try {
+              await login(email, password);
+              onClose();
+            } catch (err) {
+              try {
+                await signup(email, password);
+                onClose();
+              } catch (signupErr) {
+                setError(signupErr.message);
+                console.error(signupErr);
+              }
+            }
+          }}
+          className="w-full bg-rose-500 text-white py-2 rounded"
         >
-          Close
+          Continue
         </button>
-      </motion.div>
+      </div>
     </div>
   );
 }

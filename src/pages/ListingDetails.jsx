@@ -2,6 +2,7 @@ import { useParams, Link } from "react-router-dom";
 import { listings } from "../data/listings";
 import { useState, useEffect } from "react";
 import PageWrapper from "../components/common/PageWrapper";
+import MobileBookingSheet from "../components/booking/MobileBookingSheet";
 
 export default function ListingDetails() {
   const { id } = useParams();
@@ -16,6 +17,14 @@ export default function ListingDetails() {
   const [paymentMethod, setPaymentMethod] = useState("");
   const [paymentDone, setPaymentDone] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
+ const resetBookingFlow = () => {
+  setCheckIn("");
+  setCheckOut("");
+  setGuests(1);
+  setPaymentMethod("");
+  setPaymentDone(false);
+  setShowPayment(false);
+};
 
   if (!listing) {
     return (
@@ -39,13 +48,19 @@ export default function ListingDetails() {
   const totalPrice = nights * listing.price;
 
   /* SUCCESS TOAST */
-  useEffect(() => {
-    if (paymentDone) {
-      setShowSuccess(true);
-      const t = setTimeout(() => setShowSuccess(false), 3000);
-      return () => clearTimeout(t);
-    }
-  }, [paymentDone]);
+useEffect(() => {
+  if (paymentDone) {
+    setShowSuccess(true);
+
+    const t = setTimeout(() => {
+      setShowSuccess(false);
+      resetBookingFlow(); // 👈 THIS IS THE KEY
+    }, 3000);
+
+    return () => clearTimeout(t);
+  }
+}, [paymentDone]);
+
 
   /* AUTO SCROLL TO PAYMENT */
   const goToPayment = () => {
@@ -225,53 +240,25 @@ export default function ListingDetails() {
           Reserve
         </button>
       </div>
+      <MobileBookingSheet
+        open={showMobileBooking}
+        onClose={() => setShowMobileBooking(false)}
+        checkIn={checkIn}
+        checkOut={checkOut}
+        guests={guests}
+        setCheckIn={setCheckIn}
+        setCheckOut={setCheckOut}
+        setGuests={setGuests}
+        onContinue={() => {
+          if (!checkIn || !checkOut) {
+            alert("Select dates");
+            return;
+          }
+          setShowMobileBooking(false);
+          goToPayment();
+        }}
+/>
 
-      {/* MOBILE BOOKING MODAL */}
-      {showMobileBooking && (
-        <div className="fixed inset-0 bg-black/40 z-50 flex items-end">
-          <div className="bg-white w-full rounded-t-2xl p-6">
-            <div className="flex justify-between mb-4">
-              <h3 className="font-semibold">Your trip</h3>
-              <button onClick={() => setShowMobileBooking(false)}>✕</button>
-            </div>
-
-            <div className="grid grid-cols-2 gap-3 mb-4">
-              <input
-                type="date"
-                value={checkIn}
-                onChange={(e) => setCheckIn(e.target.value)}
-                className="border rounded-lg p-2"
-              />
-              <input
-                type="date"
-                value={checkOut}
-                onChange={(e) => setCheckOut(e.target.value)}
-                className="border rounded-lg p-2"
-              />
-            </div>
-
-            <div className="flex justify-between border rounded-lg p-2 mb-4">
-              <button onClick={() => setGuests(Math.max(1, guests - 1))}>−</button>
-              <span>{guests}</span>
-              <button onClick={() => setGuests(guests + 1)}>+</button>
-            </div>
-
-            <button
-              onClick={() => {
-                if (!checkIn || !checkOut) {
-                  alert("Select dates");
-                  return;
-                }
-                setShowMobileBooking(false);
-                goToPayment();
-              }}
-              className="w-full bg-rose-500 text-white py-3 rounded-lg"
-            >
-              Continue
-            </button>
-          </div>
-        </div>
-      )}
     </PageWrapper>
   );
 }
