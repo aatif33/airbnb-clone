@@ -43,7 +43,7 @@ export default function Chatbot() {
       {/* Floating Button */}
       <button
         onClick={() => setOpen(!open)}
-        className="fixed bottom-6 right-6 bg-rose-500 text-white rounded-full p-4 shadow-lg z-50 hover:scale-110 transition"
+        className="fixed bottom-14 right-6 bg-rose-500 text-white rounded-full p-4 shadow-lg z-50 hover:scale-110 transition"
       >
         💬
       </button>
