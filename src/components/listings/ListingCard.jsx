@@ -3,12 +3,19 @@ import { Link } from "react-router-dom";
 export default function ListingCard({ listing }) {
   return (
     <Link to={`/listing/${listing.id}`}>
-      <div className="min-w-[260px]">
+      <div className="group bg-white rounded-xl overflow-hidden
+  transition-all duration-300
+  hover:-translate-y-1 hover:shadow-xl">
+
         <div className="relative">
-          <img
-            src={listing.image}
-            className="h-64 w-full object-cover rounded-2xl"
-          />
+       <img
+        src={listing.image}
+        alt={listing.title}
+        className="h-56 w-full object-cover
+          transition-transform duration-500
+          group-hover:scale-105"
+      />
+
 
           <span className="absolute top-3 left-3 bg-white text-xs px-3 py-1 rounded-full font-medium">
             Guest favourite

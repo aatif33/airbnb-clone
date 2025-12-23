@@ -13,7 +13,12 @@ export default function Navbar({searchActive,setSearchActive}) {
   }, []);
 
   return (
-    <header className="sticky top-0 z-50 bg-white border-b">
+    <header
+    className={`sticky top-0 z-50 bg-white transition-all duration-300
+    ${scrolled ? "shadow-md" : "shadow-none"}
+  `}
+>
+
     {searchActive && (
     <div
       onClick={() => setSearchActive(false)}

@@ -36,7 +36,8 @@ export default function Home() {
     <div className="max-w-7xl mx-auto px-6 py-10 space-y-20">
 
       {bengaluru.length > 0 && (
-        <section>
+        <section className="max-w-7xl mx-auto px-6 py-8
+  animate-fadeIn">
           <h2 className="text-2xl font-semibold mb-6">
             Popular homes in Bengaluru
           </h2>
@@ -45,7 +46,8 @@ export default function Home() {
       )}
 
       {puducherry.length > 0 && (
-        <section>
+        <section className="max-w-7xl mx-auto px-6 py-8
+  animate-fadeIn">
           <h2 className="text-2xl font-semibold mb-6">
             Available in Puducherry next weekend
           </h2>
@@ -54,7 +56,8 @@ export default function Home() {
       )}
 
       {hyderabad.length > 0 && (
-        <section>
+       <section className="max-w-7xl mx-auto px-6 py-8
+  animate-fadeIn">
           <h2 className="text-2xl font-semibold mb-6">
             Stays in Hyderabad
           </h2>
@@ -63,7 +66,8 @@ export default function Home() {
       )}
 
       {hills.length > 0 && (
-        <section>
+        <section className="max-w-7xl mx-auto px-6 py-8
+  animate-fadeIn">
           <h2 className="text-2xl font-semibold mb-6">
             Mountain & hill stays
           </h2>

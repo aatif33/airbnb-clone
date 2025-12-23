@@ -10,7 +10,8 @@ export default function SearchBar({ compact, active, setActive }) {
         ${compact
           ? "w-[380px] h-12 scale-95 shadow-md"
           : "w-[720px] h-16 scale-100 shadow-xl"}
-        ${active ? "z-50" : "z-10"}
+          hover:shadow-2xl
+         ${active ? "z-50" : "z-10"}
       `}
     >
       <div

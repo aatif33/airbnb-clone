@@ -1,7 +1,8 @@
 export default function Footer() {
   return (
-    <footer className="border-t bg-gray-50 mt-16">
-      <div className="max-w-7xl mx-auto px-6 py-12 grid grid-cols-1 md:grid-cols-3 gap-10 text-sm text-gray-700">
+    <footer className="bg-gray-50 border-t mt-20">
+  <div className="max-w-7xl mx-auto px-6 py-10 text-sm text-gray-600">
+
         
         {/* SUPPORT */}
         <div>
