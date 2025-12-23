@@ -1,6 +1,6 @@
 import { Routes, Route, useLocation } from "react-router-dom";
 import { AnimatePresence } from "framer-motion";
-
+import Bookings from "../pages/Bookings";
 import Navbar from "../components/layout/Navbar";
 import Footer from "../components/layout/Footer";
 import Chatbot from "../components/chatbot/Chatbot";
@@ -25,6 +25,7 @@ export default function App() {
           <Route path="/services" element={<Services />} />
           <Route path="/listing/:id" element={<ListingDetails />} />
           <Route path="*" element={<NotFound />} />
+          <Route path="/bookings" element={<Bookings />} />
         </Routes>
       </AnimatePresence>
 

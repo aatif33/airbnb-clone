@@ -1,11 +1,15 @@
 import { listings } from "../data/listings";
 import ListingGrid from "../components/listings/ListingGrid";
 import { useSearch } from "../context/SearchContext";
+import { useState } from "react";
+import MapPreview from "../components/map/MapPreview";
+import MapModal from "../components/map/MapModal";
 import PageWrapper from "../components/common/PageWrapper";
 const getCity = (location) =>
   location.split(",")[0].trim().toLowerCase();
 
 export default function Home() {
+  const [showMap, setShowMap] = useState(false);
   const { searchQuery } = useSearch();
 
   // SEARCH FILTER
@@ -76,6 +80,8 @@ export default function Home() {
         </section>
       )}
     </div>
+    <MapPreview onOpen={() => setShowMap(true)} />
+    <MapModal open={showMap} onClose={() => setShowMap(false)} />
     </PageWrapper>
   );
 }

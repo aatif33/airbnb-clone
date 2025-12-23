@@ -2,10 +2,10 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import TopTabs from "./TopTabs";
 import SearchBar from "../search/SearchBar";
-
+import LoginModal from "../auth/LoginModal";
 export default function Navbar({searchActive,setSearchActive}) {
   const [scrolled, setScrolled] = useState(false);
-
+  const [showLogin, setShowLogin] = useState(false);
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 80);
     window.addEventListener("scroll", onScroll);
@@ -35,11 +35,20 @@ export default function Navbar({searchActive,setSearchActive}) {
         <Link to="/favorites" className="text-sm font-medium">
   ❤️ Favorites
 </Link>
+          <Link
+        to="/bookings"
+        className="text-sm font-medium "
+      >
+        🧳Trips
+      </Link>
 
+    <button
+      onClick={() => setShowLogin(true)}
+      className="bg-rose-500 text-white px-5 py-2 rounded-full"
+    >
+      Login
+    </button>
 
-        <button className="bg-rose-500 text-white px-5 py-2 rounded-full">
-          Login
-        </button>
       </div>
 
       {/* TOP TABS (hide on scroll) */}
@@ -59,6 +68,11 @@ export default function Navbar({searchActive,setSearchActive}) {
           active={searchActive}
           setActive={setSearchActive}
         />
+      <LoginModal
+        open={showLogin}
+        onClose={() => setShowLogin(false)}
+      />
+
 
       </div>
     </header>
