@@ -76,7 +76,12 @@ export default function Navbar() {
       <div className="flex justify-center pb-4">
         <SearchBar
           compact={scrolled}
-          active={searchActive}
+          active={searchActive && (
+  <div
+    onClick={() => setSearchActive(false)}
+    className="fixed inset-0 bg-black/30 backdrop-blur-sm z-40 animate-fadeIn"
+  />
+)}
           setActive={setSearchActive}
         />
       </div>

@@ -23,11 +23,10 @@ export default function Home() {
   }, []);
 
   // 🔍 SEARCH FILTER
-  const filtered = listings.filter(
-    (item) =>
-      item.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      item.location.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  const filtered = listings.filter((item) =>
+  item.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+  item.location.toLowerCase().includes(searchQuery.toLowerCase())
+);
 
   // 🗺️ GROUPS
   const bengaluru = filtered.filter(

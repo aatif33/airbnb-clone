@@ -4,14 +4,26 @@ const SearchContext = createContext();
 
 export function SearchProvider({ children }) {
   const [searchQuery, setSearchQuery] = useState("");
+  const [checkIn, setCheckIn] = useState("");
+  const [checkOut, setCheckOut] = useState("");
+  const [guests, setGuests] = useState(1);
 
   return (
-    <SearchContext.Provider value={{ searchQuery, setSearchQuery }}>
+    <SearchContext.Provider
+      value={{
+        searchQuery,
+        setSearchQuery,
+        checkIn,
+        setCheckIn,
+        checkOut,
+        setCheckOut,
+        guests,
+        setGuests,
+      }}
+    >
       {children}
     </SearchContext.Provider>
   );
 }
 
-export function useSearch() {
-  return useContext(SearchContext);
-}
+export const useSearch = () => useContext(SearchContext);
