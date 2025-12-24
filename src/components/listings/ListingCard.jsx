@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import { useFavorites } from "../../context/FavoritesContext";
+import { motion } from "framer-motion";
 import { useAuth } from "../../context/AuthContext";
 export default function ListingCard({ listing }) {
   const { id, title, price, image, location, rating } = listing;
@@ -8,6 +9,10 @@ export default function ListingCard({ listing }) {
   const isFav = favorites.includes(id);
 
   return (
+    <motion.div
+  whileHover={{ y: -6 }}
+  transition={{ type: "spring", stiffness: 300 }}
+>
     <div className="relative">
       {/* FAVORITE BUTTON */}
       <button
@@ -51,5 +56,5 @@ export default function ListingCard({ listing }) {
         </div>
       </Link>
     </div>
-  );
+</motion.div>  );
 }

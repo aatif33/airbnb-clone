@@ -166,7 +166,8 @@ export default function ListingDetails() {
                   }
                   setShowPayment(true);
                 }}
-                className="w-full bg-rose-500 text-white py-3 rounded-lg"
+                className="bg-rose-500 text-white py-3 rounded-lg font-medium
+             active:scale-95 transition-transform"
               >
                 Reserve
               </button>
@@ -255,7 +256,8 @@ export default function ListingDetails() {
                   }
                   setShowPayment(true);
                 }}
-                className="w-full bg-rose-500 text-white py-3 rounded-lg"
+                className="bg-rose-500 text-white py-3 rounded-lg font-medium
+             active:scale-95 transition-transform"
               >
                 Continue
               </button>

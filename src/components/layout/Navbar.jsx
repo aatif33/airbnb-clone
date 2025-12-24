@@ -43,7 +43,10 @@ export default function Navbar() {
           <>
           <span classname="text-sm">Hi,{user.email}</span>
         {user && (
-          <button onClick={logout}>
+          <button onClick={async()=>{
+            await logout();
+          }
+          }>
             Logout
           </button>
         )}
