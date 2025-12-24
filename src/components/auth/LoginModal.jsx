@@ -55,7 +55,7 @@ export default function LoginModal({ open, onClose }) {
         >
           ← Back
         </button>
-
+       <p className="text-lg font-semibold mb-4 text-center">Welcome to Airbnb</p>
         <h2 className="text-lg font-semibold mb-4 text-center">
           {mode === "login" ? "Log in" : "Create account"}
         </h2>

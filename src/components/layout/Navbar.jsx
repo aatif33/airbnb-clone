@@ -4,11 +4,13 @@ import TopTabs from "./TopTabs";
 import SearchBar from "../search/SearchBar";
 import LoginModal from "../auth/LoginModal";
 import { useAuth } from "../../context/AuthContext";
+
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [showLogin, setShowLogin] = useState(false);
   const [searchActive, setSearchActive] = useState(false);
   const { user, logout } = useAuth();
+
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 80);
     window.addEventListener("scroll", onScroll);
@@ -16,7 +18,7 @@ export default function Navbar() {
   }, []);
 
   return (
-    <header className="sticky top-0 z-50 bg-white transition-all duration-300">
+    <header className="sticky top-0 z-50 bg-white transition-all">
       {searchActive && (
         <div
           onClick={() => setSearchActive(false)}
@@ -31,26 +33,15 @@ export default function Navbar() {
         </Link>
 
         <div className="flex items-center gap-6">
-          <Link to="/favorites" className="text-sm font-medium">
-            ❤️ Favorites
-          </Link>
-
-          <Link to="/bookings" className="text-sm font-medium">
-            🧳 Trips
-          </Link>
+          <Link to="/favorites">❤️ Favorites</Link>
+          <Link to="/bookings">🧳 Trips</Link>
 
           {user ? (
-          <>
-          <span classname="text-sm">Hi,{user.email}</span>
-        {user && (
-          <button onClick={async()=>{
-            await logout();
-          }
-          }>
-            Logout
-          </button>
-        )}
-
+            <>
+              <span className="text-sm">Hi, {user.email}</span>
+              <button onClick={logout} className="text-sm underline">
+                Logout
+              </button>
             </>
           ) : (
             <button
@@ -63,7 +54,7 @@ export default function Navbar() {
         </div>
       </div>
 
-      {/* TOP TABS */}
+      {/* TABS */}
       <div
         className={`transition-all duration-300 overflow-hidden ${
           scrolled ? "max-h-0 opacity-0" : "max-h-20 opacity-100"
@@ -72,16 +63,11 @@ export default function Navbar() {
         <TopTabs />
       </div>
 
-      {/* SEARCH BAR */}
+      {/* SEARCH */}
       <div className="flex justify-center pb-4">
         <SearchBar
           compact={scrolled}
-          active={searchActive && (
-  <div
-    onClick={() => setSearchActive(false)}
-    className="fixed inset-0 bg-black/30 backdrop-blur-sm z-40 animate-fadeIn"
-  />
-)}
+          active={searchActive}
           setActive={setSearchActive}
         />
       </div>

@@ -1,4 +1,14 @@
+import { useState } from "react";
 import { useSearch } from "../../context/SearchContext";
+
+/* 🔥 Airbnb-style date formatter */
+const formatDate = (date) => {
+  if (!date) return "";
+  return new Date(date).toLocaleDateString("en-US", {
+    month: "short",
+    day: "numeric",
+  });
+};
 
 export default function SearchBar({ compact, active, setActive }) {
   const {
@@ -12,126 +22,164 @@ export default function SearchBar({ compact, active, setActive }) {
     setGuests,
   } = useSearch();
 
+  const [activeSection, setActiveSection] = useState(null);
+  // "where" | "when" | "who"
+
   return (
     <div
-      onClick={() => setActive(true)}
       className={`
         relative mx-auto bg-white rounded-full z-50
-        transition-all duration-300 ease-out
-        ${active ? "scale-100 shadow-xl" : "scale-95 shadow-md"}
+        transition-all duration-300
         ${compact ? "w-[380px] h-12" : "w-[720px] h-16"}
+        ${active ? "shadow-xl scale-100" : "shadow-md scale-95"}
       `}
     >
       {/* MAIN BAR */}
-      <div
-        className={`
-          flex items-center h-full px-4 border rounded-full
-          ${compact ? "gap-3" : "gap-6"}
-        `}
-      >
+      <div className="flex items-center h-full px-4 gap-4">
         {/* WHERE */}
-        <div className="flex-1">
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            setActive(true);
+            setActiveSection("where");
+          }}
+          className="flex-1 text-left"
+        >
           <p className="text-xs font-semibold">Where</p>
-          <input
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Search destinations"
-            className="w-full text-sm outline-none bg-transparent"
-          />
-        </div>
+          <p className="text-sm text-gray-500 truncate">
+            {searchQuery || "Search destinations"}
+          </p>
+        </button>
 
+        {!compact && <div className="h-8 w-px bg-gray-200" />}
+
+        {/* WHEN */}
         {!compact && (
-          <>
-            <div className="h-8 w-px bg-gray-200" />
-
-            {/* WHEN */}
-            <div className="flex-1">
-              <p className="text-xs font-semibold">When</p>
-              <p className="text-sm text-gray-500">
-                {checkIn && checkOut
-                  ? `${checkIn} → ${checkOut}`
-                  : "Add dates"}
-              </p>
-            </div>
-
-            <div className="h-8 w-px bg-gray-200" />
-
-            {/* WHO */}
-            <div className="flex-1">
-              <p className="text-xs font-semibold">Who</p>
-              <p className="text-sm text-gray-500">
-                {guests} guest{guests > 1 ? "s" : ""}
-              </p>
-            </div>
-          </>
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              setActive(true);
+              setActiveSection("when");
+            }}
+            className="flex-1 text-left"
+          >
+            <p className="text-xs font-semibold">When</p>
+            <p className="text-sm text-gray-500">
+              {checkIn && checkOut
+                ? `${formatDate(checkIn)} – ${formatDate(checkOut)}`
+                : "Add dates"}
+            </p>
+          </button>
         )}
 
-        {/* SEARCH BUTTON */}
+        {!compact && <div className="h-8 w-px bg-gray-200" />}
+
+        {/* WHO */}
+        {!compact && (
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              setActive(true);
+              setActiveSection("who");
+            }}
+            className="flex-1 text-left"
+          >
+            <p className="text-xs font-semibold">Who</p>
+            <p className="text-sm text-gray-500">
+              {guests} guest{guests > 1 && "s"}
+            </p>
+          </button>
+        )}
+
+        {/* SEARCH ICON */}
         <button
-          onClick={(e) => e.stopPropagation()}
-          className="bg-rose-500 text-white rounded-full w-10 h-10 flex items-center justify-center
-                     active:scale-95 transition-transform"
+          onClick={() => setActive(false)}
+          className="ml-2 bg-rose-500 text-white w-10 h-10 rounded-full active:scale-95 transition"
         >
           🔍
         </button>
       </div>
 
       {/* DROPDOWN PANEL */}
-      {!compact && active && (
+      {active && activeSection && (
         <div
-          onClick={(e) => e.stopPropagation()}
-          className="absolute top-full left-0 right-0 mt-4 bg-white rounded-2xl shadow-xl p-6 animate-slideUp"
+          className="absolute top-full mt-4 left-1/2 -translate-x-1/2
+                     w-full max-w-xl bg-white rounded-2xl shadow-xl
+                     p-6 animate-slideUp"
         >
-          {/* DATES */}
-          <div className="grid grid-cols-2 gap-4 mb-6">
-            <div>
-              <label className="text-xs font-semibold">Check-in</label>
+          {/* WHERE PANEL */}
+          {activeSection === "where" && (
+            <>
+              <h3 className="font-semibold mb-3">Search location</h3>
               <input
-                type="date"
-                value={checkIn}
-                onChange={(e) => setCheckIn(e.target.value)}
-                className="w-full border rounded-lg p-2 mt-1"
+                autoFocus
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Enter city or place"
+                className="w-full border rounded-lg p-3"
               />
-            </div>
+            </>
+          )}
 
-            <div>
-              <label className="text-xs font-semibold">Check-out</label>
-              <input
-                type="date"
-                value={checkOut}
-                onChange={(e) => setCheckOut(e.target.value)}
-                className="w-full border rounded-lg p-2 mt-1"
-              />
-            </div>
-          </div>
+          {/* WHEN PANEL */}
+          {activeSection === "when" && (
+            <>
+              <h3 className="font-semibold mb-3">Select dates</h3>
+              <div className="grid grid-cols-2 gap-3">
+                <input
+                  type="date"
+                  value={checkIn}
+                  onChange={(e) => setCheckIn(e.target.value)}
+                  className="border rounded-lg p-3"
+                />
+                <input
+                  type="date"
+                  value={checkOut}
+                  onChange={(e) => {
+                    setCheckOut(e.target.value);
+                    setActive(false);
+                    setActiveSection(null);
+                  }}
+                  className="border rounded-lg p-3"
+                />
+              </div>
+            </>
+          )}
 
-          {/* GUESTS */}
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="font-semibold">Guests</p>
-              <p className="text-sm text-gray-500">Ages 13+</p>
-            </div>
+          {/* WHO PANEL */}
+          {activeSection === "who" && (
+            <>
+              <h3 className="font-semibold mb-3">Guests</h3>
+              <div className="flex items-center justify-between">
+                <span>Guests</span>
+                <div className="flex items-center gap-4">
+                  <button
+                    onClick={() => setGuests(Math.max(1, guests - 1))}
+                    className="w-8 h-8 border rounded-full"
+                  >
+                    −
+                  </button>
+                  <span>{guests}</span>
+                  <button
+                    onClick={() => setGuests(guests + 1)}
+                    className="w-8 h-8 border rounded-full"
+                  >
+                    +
+                  </button>
+                </div>
+              </div>
+            </>
+          )}
 
-            <div className="flex items-center gap-4">
-              <button
-                onClick={() => setGuests(Math.max(1, guests - 1))}
-                className="w-8 h-8 border rounded-full flex items-center justify-center
-                           active:scale-95 transition"
-              >
-                −
-              </button>
-
-              <span>{guests}</span>
-
-              <button
-                onClick={() => setGuests(guests + 1)}
-                className="w-8 h-8 border rounded-full flex items-center justify-center
-                           active:scale-95 transition"
-              >
-                +
-              </button>
-            </div>
-          </div>
+          <button
+            onClick={() => {
+              setActive(false);
+              setActiveSection(null);
+            }}
+            className="mt-6 text-sm text-gray-500 hover:underline"
+          >
+            Close
+          </button>
         </div>
       )}
     </div>
