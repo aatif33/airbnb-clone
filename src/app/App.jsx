@@ -8,7 +8,7 @@ import Home from "../pages/Home";
 import Experiences from "../pages/Experiences";
 import Services from "../pages/Services";
 import ListingDetails from "../pages/ListingDetails";
-import Favorites from "../pages/Favorites";
+import Favorites from "../pages/Favorites" ;
 import Bookings from "../pages/Bookings";
 import NotFound from "../pages/NotFound";
 

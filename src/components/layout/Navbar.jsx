@@ -41,13 +41,13 @@ export default function Navbar() {
 
           {user ? (
           <>
-            <span className="text-sm">Hi, {user.email}</span>
-            <button
-              onClick={logout}
-              className="text-sm text-gray-600"
-            >
-              Logout
-            </button>
+          <span classname="text-sm">Hi,{user.email}</span>
+        {user && (
+          <button onClick={logout}>
+            Logout
+          </button>
+        )}
+
             </>
           ) : (
             <button

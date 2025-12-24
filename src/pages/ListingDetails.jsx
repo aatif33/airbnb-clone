@@ -2,29 +2,27 @@ import { useParams, Link } from "react-router-dom";
 import { listings } from "../data/listings";
 import { useState, useEffect } from "react";
 import PageWrapper from "../components/common/PageWrapper";
-import MobileBookingSheet from "../components/booking/MobileBookingSheet";
+import { useAuth } from "../context/AuthContext";
+import { db } from "../firebase";
+import {
+  collection,
+  addDoc,
+  serverTimestamp
+} from "firebase/firestore";
 
 export default function ListingDetails() {
   const { id } = useParams();
-  const listing = listings.find((item) => item.id === Number(id));
+  const listing = listings.find((l) => l.id === Number(id));
+  const { user } = useAuth();
 
   const [checkIn, setCheckIn] = useState("");
   const [checkOut, setCheckOut] = useState("");
   const [guests, setGuests] = useState(1);
 
-  const [showMobileBooking, setShowMobileBooking] = useState(false);
   const [showPayment, setShowPayment] = useState(false);
+  const [showMobileBooking, setShowMobileBooking] = useState(false);
   const [paymentMethod, setPaymentMethod] = useState("");
-  const [paymentDone, setPaymentDone] = useState(false);
-  const [showSuccess, setShowSuccess] = useState(false);
- const resetBookingFlow = () => {
-  setCheckIn("");
-  setCheckOut("");
-  setGuests(1);
-  setPaymentMethod("");
-  setPaymentDone(false);
-  setShowPayment(false);
-};
+  const [success, setSuccess] = useState(false);
 
   if (!listing) {
     return (
@@ -35,7 +33,7 @@ export default function ListingDetails() {
     );
   }
 
-  /* PRICE */
+  /* PRICE CALC */
   const nights =
     checkIn && checkOut
       ? Math.max(
@@ -47,34 +45,51 @@ export default function ListingDetails() {
 
   const totalPrice = nights * listing.price;
 
-  /* SUCCESS TOAST */
-useEffect(() => {
-  if (paymentDone) {
-    setShowSuccess(true);
+  /* AUTO HIDE SUCCESS */
+  useEffect(() => {
+    if (success) {
+      const t = setTimeout(() => setSuccess(false), 3000);
+      return () => clearTimeout(t);
+    }
+  }, [success]);
 
-    const t = setTimeout(() => {
-      setShowSuccess(false);
-      resetBookingFlow(); // 👈 THIS IS THE KEY
-    }, 3000);
+  /* BOOKING → FIRESTORE */
+  const confirmBooking = async () => {
+    if (!user) {
+      alert("Please login to book");
+      return;
+    }
 
-    return () => clearTimeout(t);
-  }
-}, [paymentDone]);
+    if (!paymentMethod) {
+      alert("Select payment method");
+      return;
+    }
 
+    await addDoc(
+      collection(db, "users", user.uid, "bookings"),
+      {
+        listingId: listing.id,
+        title: listing.title,
+        location: listing.location,
+        checkIn,
+        checkOut,
+        guests,
+        nights,
+        totalPrice,
+        paymentMethod,
+        createdAt: serverTimestamp(),
+      }
+    );
 
-  /* AUTO SCROLL TO PAYMENT */
-  const goToPayment = () => {
-    setShowPayment(true);
-    setTimeout(() => {
-      document
-        .getElementById("payment-section")
-        ?.scrollIntoView({ behavior: "smooth" });
-    }, 100);
+    setSuccess(true);
+    setShowPayment(false);
+    setShowMobileBooking(false);
+    setPaymentMethod("");
   };
 
   return (
     <PageWrapper>
-      <section className="max-w-6xl mx-auto px-6 py-10 pb-36">
+      <section className="max-w-6xl mx-auto px-6 py-10 pb-32">
         <Link to="/" className="text-sm text-gray-500 mb-4 inline-block">
           ← Back
         </Link>
@@ -120,15 +135,11 @@ useEffect(() => {
             </p>
 
             <div className="grid grid-cols-2 gap-2 mb-4">
-              <input
-                type="date"
-                value={checkIn}
+              <input type="date" value={checkIn}
                 onChange={(e) => setCheckIn(e.target.value)}
                 className="border rounded-lg p-2"
               />
-              <input
-                type="date"
-                value={checkOut}
+              <input type="date" value={checkOut}
                 onChange={(e) => setCheckOut(e.target.value)}
                 className="border rounded-lg p-2"
               />
@@ -146,84 +157,51 @@ useEffect(() => {
               </p>
             )}
 
-            {!paymentDone && (
+            {!showPayment && (
               <button
                 onClick={() => {
                   if (!checkIn || !checkOut) {
                     alert("Select dates");
                     return;
                   }
-                  goToPayment();
+                  setShowPayment(true);
                 }}
                 className="w-full bg-rose-500 text-white py-3 rounded-lg"
               >
                 Reserve
               </button>
             )}
+
+            {showPayment && (
+              <div className="mt-4 border p-4 rounded-lg">
+                {["card", "upi", "netbanking"].map((m) => (
+                  <label key={m} className="flex items-center gap-2 mb-2">
+                    <input
+                      type="radio"
+                      name="payment"
+                      value={m}
+                      onChange={(e) => setPaymentMethod(e.target.value)}
+                    />
+                    {m.toUpperCase()}
+                  </label>
+                ))}
+
+                <button
+                  onClick={confirmBooking}
+                  disabled={!paymentMethod}
+                  className="mt-3 w-full bg-rose-500 text-white py-3 rounded-lg"
+                >
+                  Pay & Book
+                </button>
+              </div>
+            )}
           </div>
         </div>
 
-        {/* PAYMENT (SHARED) */}
-        {showPayment && !paymentDone && (
-          <div
-            id="payment-section"
-            className="max-w-md mx-auto mt-8 border rounded-xl p-6 bg-white shadow"
-          >
-            <h4 className="font-semibold mb-4">Payment Method</h4>
-
-            {["card", "upi", "netbanking"].map((m) => (
-              <label key={m} className="flex items-center gap-2 mb-2">
-                <input
-                  type="radio"
-                  name="payment"
-                  value={m}
-                  onChange={(e) => setPaymentMethod(e.target.value)}
-                />
-                {m.toUpperCase()}
-              </label>
-            ))}
-
-            <button
-              disabled={!paymentMethod}
-              onClick={() => {
-                const booking = {
-                  id: Date.now(),
-                  title: listing.title,
-                  location: listing.location,
-                  checkIn,
-                  checkOut,
-                  guests,
-                  nights,
-                  totalPrice,
-                  paymentMethod,
-                  bookedAt: new Date().toISOString(),
-                };
-
-                const existing =
-                  JSON.parse(localStorage.getItem("bookings")) || [];
-
-                localStorage.setItem(
-                  "bookings",
-                  JSON.stringify([...existing, booking])
-                );
-
-                setPaymentDone(true);
-                setShowPayment(false);
-              }}
-              className={`mt-4 w-full py-3 rounded-lg font-medium ${
-                paymentMethod
-                  ? "bg-rose-500 text-white"
-                  : "bg-gray-300 text-gray-500 cursor-not-allowed"
-              }`}
-            >
-              Pay ₹{totalPrice || listing.price}
-            </button>
-          </div>
-        )}
-
-        {showSuccess && (
+        {/* SUCCESS TOAST */}
+        {success && (
           <div className="fixed bottom-24 left-6 bg-green-600 text-white px-6 py-4 rounded-xl shadow-lg">
-            🎉 Booking successful!
+            🎉 Booking confirmed!
           </div>
         )}
       </section>
@@ -233,6 +211,7 @@ useEffect(() => {
         <div>
           ₹{listing.price} <span className="text-sm text-gray-500">/ night</span>
         </div>
+
         <button
           onClick={() => setShowMobileBooking(true)}
           className="bg-rose-500 text-white px-6 py-2 rounded-lg"
@@ -240,25 +219,72 @@ useEffect(() => {
           Reserve
         </button>
       </div>
-      <MobileBookingSheet
-        open={showMobileBooking}
-        onClose={() => setShowMobileBooking(false)}
-        checkIn={checkIn}
-        checkOut={checkOut}
-        guests={guests}
-        setCheckIn={setCheckIn}
-        setCheckOut={setCheckOut}
-        setGuests={setGuests}
-        onContinue={() => {
-          if (!checkIn || !checkOut) {
-            alert("Select dates");
-            return;
-          }
-          setShowMobileBooking(false);
-          goToPayment();
-        }}
-/>
 
+      {/* MOBILE MODAL */}
+      {showMobileBooking && (
+        <div className="fixed inset-0 bg-black/40 z-50 flex items-end">
+          <div className="bg-white w-full rounded-t-2xl p-6">
+            <div className="flex justify-between mb-4">
+              <h3 className="font-semibold">Your trip</h3>
+              <button onClick={() => setShowMobileBooking(false)}>✕</button>
+            </div>
+
+            <div className="grid grid-cols-2 gap-3 mb-4">
+              <input type="date" value={checkIn}
+                onChange={(e) => setCheckIn(e.target.value)}
+                className="border rounded-lg p-2"
+              />
+              <input type="date" value={checkOut}
+                onChange={(e) => setCheckOut(e.target.value)}
+                className="border rounded-lg p-2"
+              />
+            </div>
+
+            <div className="flex justify-between border rounded-lg p-2 mb-4">
+              <button onClick={() => setGuests(Math.max(1, guests - 1))}>−</button>
+              <span>{guests}</span>
+              <button onClick={() => setGuests(guests + 1)}>+</button>
+            </div>
+
+            {!showPayment ? (
+              <button
+                onClick={() => {
+                  if (!checkIn || !checkOut) {
+                    alert("Select dates");
+                    return;
+                  }
+                  setShowPayment(true);
+                }}
+                className="w-full bg-rose-500 text-white py-3 rounded-lg"
+              >
+                Continue
+              </button>
+            ) : (
+              <>
+                {["card", "upi", "netbanking"].map((m) => (
+                  <label key={m} className="flex items-center gap-2 mb-2">
+                    <input
+                      type="radio"
+                      name="payment"
+                      value={m}
+                      onChange={(e) => setPaymentMethod(e.target.value)}
+                    />
+                    {m.toUpperCase()}
+                  </label>
+                ))}
+
+                <button
+                  onClick={confirmBooking}
+                  disabled={!paymentMethod}
+                  className="w-full bg-rose-500 text-white py-3 rounded-lg"
+                >
+                  Pay & Book
+                </button>
+              </>
+            )}
+          </div>
+        </div>
+      )}
     </PageWrapper>
   );
 }

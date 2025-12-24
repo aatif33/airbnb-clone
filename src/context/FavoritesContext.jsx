@@ -1,19 +1,41 @@
 import { createContext, useContext, useEffect, useState } from "react";
+import { useAuth } from "./AuthContext";
 
 const FavoritesContext = createContext();
 
 export function FavoritesProvider({ children }) {
-  // ✅ Initialize directly from localStorage
-  const [favorites, setFavorites] = useState(() => {
-    return JSON.parse(localStorage.getItem("favorites")) || [];
-  });
+  const { user } = useAuth();
+  const [favorites, setFavorites] = useState([]);
 
-  // ✅ Persist automatically on change
+  // Load favorites when user changes
   useEffect(() => {
-    localStorage.setItem("favorites", JSON.stringify(favorites));
-  }, [favorites]);
+    if (!user) {
+      setFavorites([]);
+      return;
+    }
+
+    const stored =
+      JSON.parse(localStorage.getItem(`favorites_${user.uid}`)) || [];
+
+    setFavorites(stored);
+  }, [user]);
+
+  // Save favorites per user
+  useEffect(() => {
+    if (user) {
+      localStorage.setItem(
+        `favorites_${user.uid}`,
+        JSON.stringify(favorites)
+      );
+    }
+  }, [favorites, user]);
 
   const toggleFavorite = (id) => {
+    if (!user) {
+      alert("Please login to save favorites");
+      return;
+    }
+
     setFavorites((prev) =>
       prev.includes(id)
         ? prev.filter((fid) => fid !== id)
