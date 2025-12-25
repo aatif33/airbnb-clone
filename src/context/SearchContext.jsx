@@ -4,16 +4,20 @@ const SearchContext = createContext();
 
 export function SearchProvider({ children }) {
   const [searchQuery, setSearchQuery] = useState("");
-
   const [dateRange, setDateRange] = useState([
-    { startDate: null, endDate: null, key: "selection" },
+    {
+      startDate: null,
+      endDate: null,
+      key: "selection",
+    },
   ]);
-
   const [guests, setGuests] = useState(1);
 
   const resetSearch = () => {
     setSearchQuery("");
-    setDateRange([{ startDate: null, endDate: null, key: "selection" }]);
+    setDateRange([
+      { startDate: null, endDate: null, key: "selection" },
+    ]);
     setGuests(1);
   };
 

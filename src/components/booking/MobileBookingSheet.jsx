@@ -1,13 +1,12 @@
 import { useEffect } from "react";
+import { DateRange } from "react-date-range";
 
 export default function MobileBookingSheet({
   open,
   onClose,
-  checkIn,
-  checkOut,
+  dateRange,
+  setDateRange,
   guests,
-  setCheckIn,
-  setCheckOut,
   setGuests,
   onContinue,
 }) {
@@ -22,14 +21,14 @@ export default function MobileBookingSheet({
       {/* BACKDROP */}
       <div
         onClick={onClose}
-        className={`fixed inset-0 bg-black/40 z-40 transition-opacity duration-300
+        className={`fixed inset-0 bg-black/40 z-40 transition-opacity
           ${open ? "opacity-100" : "opacity-0 pointer-events-none"}`}
       />
 
       {/* SHEET */}
       <div
         className={`fixed bottom-0 left-0 right-0 z-50 bg-white rounded-t-2xl
-        transform transition-transform duration-300 ease-out
+        transition-transform duration-300
         ${open ? "translate-y-0" : "translate-y-full"}`}
       >
         {/* HANDLE */}
@@ -37,41 +36,41 @@ export default function MobileBookingSheet({
           <div className="w-10 h-1.5 rounded-full bg-gray-300" />
         </div>
 
-        <div className="p-6">
-          <div className="flex justify-between items-center mb-4">
+        <div className="p-6 space-y-6">
+          <div className="flex justify-between items-center">
             <h3 className="text-lg font-semibold">Your trip</h3>
             <button onClick={onClose} className="text-xl">✕</button>
           </div>
 
-          {/* DATES */}
-          <div className="grid grid-cols-2 gap-3 mb-4">
-            <input
-              type="date"
-              value={checkIn}
-              onChange={(e) => setCheckIn(e.target.value)}
-              className="border rounded-lg p-2"
-            />
-            <input
-              type="date"
-              value={checkOut}
-              onChange={(e) => setCheckOut(e.target.value)}
-              className="border rounded-lg p-2"
-            />
-          </div>
+          {/* ✅ AIRBNB-STYLE CALENDAR */}
+          <DateRange
+            ranges={dateRange}
+            onChange={(item) => setDateRange([item.selection])}
+            minDate={new Date()}
+            rangeColors={["#f43f5e"]}
+            showDateDisplay={false}
+            direction="vertical"
+          />
 
           {/* GUESTS */}
-          <div className="flex justify-between items-center border rounded-lg p-3 mb-6">
-            <span>Guests</span>
+          <div className="flex justify-between items-center border rounded-lg p-4">
+            <span className="font-medium">Guests</span>
             <div className="flex gap-4 items-center">
-              <button onClick={() => setGuests(Math.max(1, guests - 1))}>−</button>
+              <button
+                onClick={() => setGuests(Math.max(1, guests - 1))}
+                className="w-8 h-8 border rounded-full"
+              >
+                −
+              </button>
               <span>{guests}</span>
-              <button onClick={() => setGuests(guests + 1)}>+</button>
+              <button
+                onClick={() => setGuests(guests + 1)}
+                className="w-8 h-8 border rounded-full"
+              >
+                +
+              </button>
             </div>
           </div>
-          <div className="md:hidden sticky top-[72px] z-40 bg-white px-6 py-2">
-            <BackButton />
-          </div>
-
 
           <button
             onClick={onContinue}
