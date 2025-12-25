@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { listings } from "../data/listings";
 import { useSearch } from "../context/SearchContext";
 
@@ -12,7 +13,9 @@ const getCity = (location) =>
   location.split(",")[0].trim().toLowerCase();
 
 export default function Home() {
-  const { searchQuery } = useSearch();
+  const navigate = useNavigate();
+  const { searchQuery,resetSearch } = useSearch();
+
   const [showMap, setShowMap] = useState(false);
   const [loading, setLoading] = useState(true);
 
@@ -23,10 +26,11 @@ export default function Home() {
   }, []);
 
   // 🔍 SEARCH FILTER
-  const filtered = listings.filter((item) =>
-  item.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-  item.location.toLowerCase().includes(searchQuery.toLowerCase())
-);
+  const filtered = listings.filter(
+    (item) =>
+      item.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      item.location.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
   // 🗺️ GROUPS
   const bengaluru = filtered.filter(
@@ -45,7 +49,7 @@ export default function Home() {
     l.location.toLowerCase().includes("nilgiris")
   );
 
-  // 🧱 SKELETON GRID (reusable)
+  // 🧱 SKELETON GRID
   const SkeletonGrid = () => (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
       {[...Array(6)].map((_, i) => (
@@ -56,7 +60,25 @@ export default function Home() {
 
   return (
     <PageWrapper>
-      <div className="max-w-7xl mx-auto px-6 py-10 space-y-20">
+      <div className="max-w-7xl mx-auto px-6 py-6 space-y-20">
+
+        {/* ✅ BACK BUTTON (only when searching / filtered) */}
+        {searchQuery && (
+          <button
+            onClick={() =>{ 
+              resetSearch();
+              navigate("/");
+            }}
+            className="
+              inline-flex items-center gap-2
+              text-sm font-medium text-gray-600
+              hover:text-black
+              active:scale-95 transition
+            "
+          >
+            ← Back
+          </button>
+        )}
 
         {/* BENGALURU */}
         {bengaluru.length > 0 && (
@@ -65,11 +87,7 @@ export default function Home() {
               Popular homes in Bengaluru
             </h2>
 
-            {loading ? (
-              <SkeletonGrid />
-            ) : (
-              <ListingGrid listings={bengaluru} />
-            )}
+            {loading ? <SkeletonGrid /> : <ListingGrid listings={bengaluru} />}
           </section>
         )}
 
@@ -80,11 +98,7 @@ export default function Home() {
               Available in Puducherry next weekend
             </h2>
 
-            {loading ? (
-              <SkeletonGrid />
-            ) : (
-              <ListingGrid listings={puducherry} />
-            )}
+            {loading ? <SkeletonGrid /> : <ListingGrid listings={puducherry} />}
           </section>
         )}
 
@@ -95,11 +109,7 @@ export default function Home() {
               Stays in Hyderabad
             </h2>
 
-            {loading ? (
-              <SkeletonGrid />
-            ) : (
-              <ListingGrid listings={hyderabad} />
-            )}
+            {loading ? <SkeletonGrid /> : <ListingGrid listings={hyderabad} />}
           </section>
         )}
 
@@ -110,11 +120,7 @@ export default function Home() {
               Mountain & hill stays
             </h2>
 
-            {loading ? (
-              <SkeletonGrid />
-            ) : (
-              <ListingGrid listings={hills} />
-            )}
+            {loading ? <SkeletonGrid /> : <ListingGrid listings={hills} />}
           </section>
         )}
       </div>

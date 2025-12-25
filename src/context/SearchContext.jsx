@@ -4,21 +4,29 @@ const SearchContext = createContext();
 
 export function SearchProvider({ children }) {
   const [searchQuery, setSearchQuery] = useState("");
-  const [checkIn, setCheckIn] = useState("");
-  const [checkOut, setCheckOut] = useState("");
+
+  const [dateRange, setDateRange] = useState([
+    { startDate: null, endDate: null, key: "selection" },
+  ]);
+
   const [guests, setGuests] = useState(1);
+
+  const resetSearch = () => {
+    setSearchQuery("");
+    setDateRange([{ startDate: null, endDate: null, key: "selection" }]);
+    setGuests(1);
+  };
 
   return (
     <SearchContext.Provider
       value={{
         searchQuery,
         setSearchQuery,
-        checkIn,
-        setCheckIn,
-        checkOut,
-        setCheckOut,
+        dateRange,
+        setDateRange,
         guests,
         setGuests,
+        resetSearch,
       }}
     >
       {children}

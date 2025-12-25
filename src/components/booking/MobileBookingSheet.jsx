@@ -68,6 +68,10 @@ export default function MobileBookingSheet({
               <button onClick={() => setGuests(guests + 1)}>+</button>
             </div>
           </div>
+          <div className="md:hidden sticky top-[72px] z-40 bg-white px-6 py-2">
+            <BackButton />
+          </div>
+
 
           <button
             onClick={onContinue}

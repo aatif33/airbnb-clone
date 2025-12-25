@@ -1,29 +1,32 @@
 import { useState } from "react";
 import { useSearch } from "../../context/SearchContext";
+import { DateRange } from "react-date-range";
+import "react-date-range/dist/styles.css";
+import "react-date-range/dist/theme/default.css";
 
-/* 🔥 Airbnb-style date formatter */
-const formatDate = (date) => {
-  if (!date) return "";
-  return new Date(date).toLocaleDateString("en-US", {
-    month: "short",
-    day: "numeric",
-  });
-};
+/* date formatter */
+const formatDate = (d) =>
+  d
+    ? new Date(d).toLocaleDateString("en-US", {
+        month: "short",
+        day: "numeric",
+      })
+    : "";
 
 export default function SearchBar({ compact, active, setActive }) {
   const {
     searchQuery,
     setSearchQuery,
-    checkIn,
-    setCheckIn,
-    checkOut,
-    setCheckOut,
+    dateRange,
+    setDateRange,
     guests,
     setGuests,
   } = useSearch();
 
   const [activeSection, setActiveSection] = useState(null);
-  // "where" | "when" | "who"
+
+  const startDate = dateRange[0].startDate;
+  const endDate = dateRange[0].endDate;
 
   return (
     <div
@@ -65,8 +68,8 @@ export default function SearchBar({ compact, active, setActive }) {
           >
             <p className="text-xs font-semibold">When</p>
             <p className="text-sm text-gray-500">
-              {checkIn && checkOut
-                ? `${formatDate(checkIn)} – ${formatDate(checkOut)}`
+              {startDate && endDate
+                ? `${formatDate(startDate)} – ${formatDate(endDate)}`
                 : "Add dates"}
             </p>
           </button>
@@ -91,7 +94,6 @@ export default function SearchBar({ compact, active, setActive }) {
           </button>
         )}
 
-        {/* SEARCH ICON */}
         <button
           onClick={() => setActive(false)}
           className="ml-2 bg-rose-500 text-white w-10 h-10 rounded-full active:scale-95 transition"
@@ -100,14 +102,10 @@ export default function SearchBar({ compact, active, setActive }) {
         </button>
       </div>
 
-      {/* DROPDOWN PANEL */}
+      {/* DROPDOWN */}
       {active && activeSection && (
-        <div
-          className="absolute top-full mt-4 left-1/2 -translate-x-1/2
-                     w-full max-w-xl bg-white rounded-2xl shadow-xl
-                     p-6 animate-slideUp"
-        >
-          {/* WHERE PANEL */}
+        <div className="absolute top-full mt-4 left-1/2 -translate-x-1/2 bg-white rounded-2xl shadow-xl p-6 animate-slideUp">
+          {/* WHERE */}
           {activeSection === "where" && (
             <>
               <h3 className="font-semibold mb-3">Search location</h3>
@@ -121,36 +119,24 @@ export default function SearchBar({ compact, active, setActive }) {
             </>
           )}
 
-          {/* WHEN PANEL */}
+          {/* WHEN — REAL CALENDAR */}
           {activeSection === "when" && (
             <>
-              <h3 className="font-semibold mb-3">Select dates</h3>
-              <div className="grid grid-cols-2 gap-3">
-                <input
-                  type="date"
-                  value={checkIn}
-                  onChange={(e) => setCheckIn(e.target.value)}
-                  className="border rounded-lg p-3"
-                />
-                <input
-                  type="date"
-                  value={checkOut}
-                  onChange={(e) => {
-                    setCheckOut(e.target.value);
-                    setActive(false);
-                    setActiveSection(null);
-                  }}
-                  className="border rounded-lg p-3"
-                />
-              </div>
+              <h3 className="font-semibold mb-4">Select dates</h3>
+              <DateRange
+                ranges={dateRange}
+                onChange={(item) => setDateRange([item.selection])}
+                minDate={new Date()}
+                rangeColors={["#ef4444"]}
+              />
             </>
           )}
 
-          {/* WHO PANEL */}
+          {/* WHO */}
           {activeSection === "who" && (
             <>
               <h3 className="font-semibold mb-3">Guests</h3>
-              <div className="flex items-center justify-between">
+              <div className="flex justify-between items-center">
                 <span>Guests</span>
                 <div className="flex items-center gap-4">
                   <button
