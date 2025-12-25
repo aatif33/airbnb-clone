@@ -11,7 +11,7 @@ import ListingDetails from "../pages/ListingDetails";
 import Favorites from "../pages/Favorites" ;
 import Bookings from "../pages/Bookings";
 import NotFound from "../pages/NotFound";
-
+import ExperienceDetails from "../pages/ExperienceDetails";
 export default function App() {
   const location = useLocation();
 
@@ -23,6 +23,8 @@ export default function App() {
         <Routes location={location} key={location.pathname}>
           <Route path="/" element={<Home />} />
           <Route path="/experiences" element={<Experiences />} />
+          <Route path="/experience/:id" element={<ExperienceDetails />} />
+
           <Route path="/services" element={<Services />} />
           <Route path="/listing/:id" element={<ListingDetails />} />
           <Route path="/favorites" element={<Favorites />} /> {/* ✅ FIX */}

@@ -124,6 +124,8 @@ export default function Home() {
           </section>
         )}
       </div>
+      
+
 
       {/* MAP */}
       <MapPreview onOpen={() => setShowMap(true)} />
