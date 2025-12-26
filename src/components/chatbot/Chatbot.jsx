@@ -13,6 +13,7 @@ const genAI = new GoogleGenerativeAI(import.meta.env.VITE_GEMINI_API_KEY);
 const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
 
 export default function Chatbot() {
+  const [confirmClose , setConfirmClose]=useState(false);
   const { user } = useAuth();
   const [open, setOpen] = useState(false);
   const [input, setInput] = useState("");
@@ -27,6 +28,7 @@ export default function Chatbot() {
   setInput("");
   setLoading(false);
   setShowScrollBtn(false);
+  setConfirmClose(false);
 };
 
   const add = (sender, text) =>
@@ -135,13 +137,42 @@ export default function Chatbot() {
 
             {/* ❌ EXIT BUTTON */}
             <button
-              onClick={resetChatbot}
+              onClick={()=>setConfirmClose(true)}
               className="text-white text-lg hover:opacity-80"
             >
               ✕
             </button>
           </div>
+         {confirmClose && (
+<div className="border-t bg-white p-3 animate-slideUp">
+<p className="text-sm text-gray-700 mb-2">
+Ask me about <span className="font-medium">services</span>
+<span className="font-medium">bookings</span>?
+<br />
 
+<span className="text-xs text-gray-500">
+Closing will clear this conversation.
+</span>
+
+</p>
+
+<div className="flex gap-2">
+
+<button
+onClick={() => setConfirmClose(false)}
+className="flex-1 border rounded-1g py-2 text-sm"
+>
+Continue chat
+</button>
+<button
+onClick={resetChatbot}
+className="flex-1 bg-rose-500 text-white rounded-1g py-2 text-sm"
+>
+Close
+</button>
+</div>
+</div>
+)}
           {/* CHAT */}
           <div
             ref={chatRef}
