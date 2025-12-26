@@ -10,6 +10,10 @@ export default function AppRouter() {
       <Route path="/listing/:id" element={<ListingDetails />} />
       <Route path="*" element={<NotFound />} />
       <Route path="/experience/:id" element={<ExperienceDetails />} />
+      <Route
+        path="/experience-receipt/:bookingId"
+        element={<ExperienceReceipt />}
+      />
     </Routes>
   );
 }

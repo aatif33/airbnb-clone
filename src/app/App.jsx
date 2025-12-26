@@ -12,6 +12,7 @@ import Favorites from "../pages/Favorites" ;
 import Bookings from "../pages/Bookings";
 import NotFound from "../pages/NotFound";
 import AdminExperience from "../pages/AdminExperience";
+import ExperienceReceipt from "../pages/ExperienceReceipt";
 import ExperienceBookings from "../pages/ExperienceBookings";
 import ExperienceDetails from "../pages/ExperienceDetails";
 export default function App() {
@@ -27,7 +28,12 @@ export default function App() {
           <Route path="/experiences" element={<Experiences />} />
           <Route path="/experience/:id" element={<ExperienceDetails />} />
           <Route path="/experience-bookings" element={<ExperienceBookings />} />
-          <Route path="/admin/experiences" element={<AdminExperience />} />
+          <Route path="/admin/experiences" elem
+          ent={<AdminExperience />} />
+          <Route
+            path="/experience-receipt/:id"
+            element={<ExperienceReceipt />}
+          />
           <Route path="/services" element={<Services />} />
           <Route path="/listing/:id" element={<ListingDetails />} />
           <Route path="/favorites" element={<Favorites />} /> {/* ✅ FIX */}
