@@ -1,6 +1,7 @@
 import { Routes, Route, useLocation } from "react-router-dom";
 import { AnimatePresence } from "framer-motion";
 import ProtectedRoute from "../components/common/ProtectedRoute";
+import ServiceDetails from "../pages/ServiceDetails";
 import Navbar from "../components/layout/Navbar";
 import Footer from "../components/layout/Footer";
 import Chatbot from "../components/chatbot/Chatbot";
@@ -35,6 +36,7 @@ export default function App() {
             element={<ExperienceReceipt />}
           />
           <Route path="/services" element={<Services />} />
+          <Route path="/services/:id" element={<ServiceDetails />} />
           <Route path="/listing/:id" element={<ListingDetails />} />
           <Route path="/favorites" element={<Favorites />} /> {/* ✅ FIX */}
           <Route
