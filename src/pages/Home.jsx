@@ -124,12 +124,8 @@ export default function Home() {
           </section>
         )}
       </div>
-      
-
-
-      {/* MAP */}
-      <MapPreview onOpen={() => setShowMap(true)} />
-      <MapModal open={showMap} onClose={() => setShowMap(false)} />
+        <h1 className="text-1xl text-red-500 
+        mb-2"> Other Areas are comming soon....</h1>
     </PageWrapper>
   );
 }

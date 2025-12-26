@@ -15,6 +15,8 @@ export default function Services() {
         </p>
 
         <ServiceGrid services={services} />
+        <h1 className="text-1xl text-red-500 
+        mb-2">Other Services are comming soon....</h1>
       </section>
     </PageWrapper>
   );

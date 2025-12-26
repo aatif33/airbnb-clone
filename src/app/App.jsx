@@ -8,6 +8,7 @@ import Chatbot from "../components/chatbot/Chatbot";
 import Home from "../pages/Home";
 import Experiences from "../pages/Experiences";
 import Services from "../pages/Services";
+import ServiceBookings from "../pages/ServiceBookings";
 import ListingDetails from "../pages/ListingDetails";
 import Favorites from "../pages/Favorites" ;
 import Bookings from "../pages/Bookings";
@@ -56,6 +57,7 @@ export default function App() {
               </ProtectedRoute>
             }
           />
+          <Route path="/service-bookings" element={<ServiceBookings />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </AnimatePresence>

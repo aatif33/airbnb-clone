@@ -16,7 +16,8 @@ export default function Experiences() {
           title="Experiences in Bengaluru"
           data={experiences.local}
         />
-        
+        <h1 className="text-1xl text-center text-red-500 
+        mb-2">Other Experiences are comming soon....</h1>
       </main>
     </PageWrapper>
   );
