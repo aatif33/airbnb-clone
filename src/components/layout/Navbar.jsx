@@ -10,7 +10,7 @@ export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [searchActive, setSearchActive] = useState(false);
   const [showLogin, setShowLogin] = useState(false);
-  const [openProfile, setOpenProfile] = useState(false);
+  const [openMenu, setOpenMenu] = useState(false); // 🔥 MOBILE MENU
 
   const { user, logout } = useAuth();
   const { resetSearch } = useSearch();
@@ -23,7 +23,8 @@ export default function Navbar() {
   }, []);
 
   return (
-    <header className="sticky top-0 z-50 bg-white border-b">
+    <header className="sticky top-0 z-50 bg-white">
+      {/* 🔥 SEARCH BACKDROP */}
       {searchActive && (
         <div
           onClick={() => setSearchActive(false)}
@@ -31,9 +32,77 @@ export default function Navbar() {
         />
       )}
 
-      {/* TOP BAR */}
-      <div className="flex items-center justify-between px-6 py-4 relative">
-        {/* LOGO */}
+      {/* 🔥 MOBILE MENU BACKDROP */}
+      {openMenu && (
+        <div
+          onClick={() => setOpenMenu(false)}
+          className="fixed inset-0 bg-black/40 z-50"
+        />
+      )}
+
+      {/* 🔥 MOBILE SLIDE MENU */}
+      <div
+        className={`fixed top-0 right-0 h-full w-72 bg-white z-50
+        transform transition-transform duration-300
+        ${openMenu ? "translate-x-0" : "translate-x-full"}`}
+      >
+        <div className="p-6 flex flex-col gap-5">
+
+          <div className="flex justify-between items-center mb-4">
+            <span className="text-lg font-semibold">Menu</span>
+            <button onClick={() => setOpenMenu(false)}>✕</button>
+          </div>
+
+          <Link to="/favorites" onClick={() => setOpenMenu(false)}>
+            ❤️ Favorites
+          </Link>
+
+          <Link to="/bookings" onClick={() => setOpenMenu(false)}>
+            🧳 Trips
+          </Link>
+
+          <Link to="/experience-bookings" onClick={() => setOpenMenu(false)}>
+            🎟️ Experiences
+          </Link>
+
+          <Link to="/service-bookings" onClick={() => setOpenMenu(false)}>
+            🛠️ Services
+          </Link>
+
+          <hr />
+
+          {user ? (
+            <>
+              <div className="text-sm text-gray-600 truncate">
+                {user.email}
+              </div>
+
+              <button
+                onClick={() => {
+                  logout();
+                  setOpenMenu(false);
+                }}
+                className="text-left text-red-600"
+              >
+                Logout
+              </button>
+            </>
+          ) : (
+            <button
+              onClick={() => {
+                setShowLogin(true);
+                setOpenMenu(false);
+              }}
+              className="bg-rose-500 text-white py-2 rounded-lg"
+            >
+              Login
+            </button>
+          )}
+        </div>
+      </div>
+
+      {/* 🔥 TOP BAR */}
+      <div className="flex items-center justify-between px-6 py-4">
         <button
           onClick={() => {
             resetSearch();
@@ -44,88 +113,43 @@ export default function Navbar() {
           airbnb
         </button>
 
-        {/* NAV LINKS */}
-        <div className="flex gap-3 items-center text-sm font-medium">
+        {/* 🔥 DESKTOP LINKS */}
+        <div className="hidden md:flex gap-6 items-center">
           <Link to="/favorites">❤️ Favorites</Link>
           <Link to="/bookings">🧳 Trips</Link>
-          <Link to="/experiences">🎟️ Experiences</Link>
+          <Link to="/experience-bookings">🎟️ Experiences</Link>
           <Link to="/services">🛠️ Services</Link>
 
-          {/* USER / LOGIN */}
           {user ? (
-  <>
-    {/* BACKDROP to close dropdown */}
-    {openProfile && (
-      <div
-        onClick={() => setOpenProfile(false)}
-        className="fixed inset-0 z-[90]"
-      />
-    )}
+            <button onClick={logout}>Logout</button>
+          ) : (
+            <button
+              onClick={() => setShowLogin(true)}
+              className="bg-rose-500 text-white px-5 py-2 rounded-full"
+            >
+              Login
+            </button>
+          )}
+        </div>
 
-    <div className="relative">
-      <button
-        onClick={() => setOpenProfile((p) => !p)}
-        className="flex items-center gap-2 border rounded-full px-4 py-2 hover:shadow z-[100]"
-      >
-        👤
-        <span className="hidden md:block">
-          {user.email.split("@")[0]}
-        </span>
-      </button>
-
-      {/* DROPDOWN */}
-      {openProfile && (
-        <div
-          className="
-            fixed right-6 top-[72px]
-            w-60 bg-white border rounded-2xl
-            shadow-2xl z-[100]
-            animate-slideUp
-          "
+        {/* 🔥 MOBILE HAMBURGER */}
+        <button
+          onClick={() =>{ setOpenMenu(true);
+            setSearchActive(false);}
+          }
+          className="md:hidden text-2xl"
         >
-          <div className="px-4 py-3 text-sm text-gray-600 border-b">
-            Signed in as
-            <div className="font-medium text-gray-900 truncate">
-              {user.email}
-            </div>
-          </div>
-
-          <button
-            onClick={() => {
-              logout();
-              setOpenProfile(false);
-            }}
-            className="
-              w-full text-left px-4 py-3
-              text-sm font-medium text-red-600
-              hover:bg-gray-100 rounded-b-2xl
-            "
-          >
-            Logout
-          </button>
-        </div>
-      )}
-    </div>
-  </>
-) : (
-  <button
-    onClick={() => setShowLogin(true)}
-    className="bg-rose-500 text-white px-5 py-2 rounded-full"
-  >
-    Login
-  </button>
-)}
-
-        </div>
+          ☰
+        </button>
       </div>
 
-      {/* TOP TABS */}
+      {/* 🔥 TABS */}
       <div className={`${scrolled ? "hidden" : "block"}`}>
         <TopTabs />
       </div>
 
-      {/* SEARCH BAR */}
-      <div className="flex justify-center pb-4">
+      {/* 🔥 SEARCH */}
+      <div className={`${openMenu ? "hidden" : "block"}`}>
         <SearchBar
           compact={scrolled}
           active={searchActive}
