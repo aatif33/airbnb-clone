@@ -11,6 +11,8 @@ import ListingDetails from "../pages/ListingDetails";
 import Favorites from "../pages/Favorites" ;
 import Bookings from "../pages/Bookings";
 import NotFound from "../pages/NotFound";
+import AdminExperience from "../pages/AdminExperience";
+import ExperienceBookings from "../pages/ExperienceBookings";
 import ExperienceDetails from "../pages/ExperienceDetails";
 export default function App() {
   const location = useLocation();
@@ -24,7 +26,8 @@ export default function App() {
           <Route path="/" element={<Home />} />
           <Route path="/experiences" element={<Experiences />} />
           <Route path="/experience/:id" element={<ExperienceDetails />} />
-
+          <Route path="/experience-bookings" element={<ExperienceBookings />} />
+          <Route path="/admin/experiences" element={<AdminExperience />} />
           <Route path="/services" element={<Services />} />
           <Route path="/listing/:id" element={<ListingDetails />} />
           <Route path="/favorites" element={<Favorites />} /> {/* ✅ FIX */}

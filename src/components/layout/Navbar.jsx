@@ -44,6 +44,9 @@ export default function Navbar() {
         <div className="flex gap-6 items-center">
           <Link to="/favorites">❤️ Favorites</Link>
           <Link to="/bookings">🧳 Trips</Link>
+          <Link to="/experience-bookings" className="text-sm font-medium">
+            🎟️ Experiences
+          </Link>
 
           {user ? (
             <>
