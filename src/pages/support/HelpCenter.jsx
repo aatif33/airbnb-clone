@@ -1,8 +1,10 @@
 import PageWrapper from "../../components/common/PageWrapper";
+import PageTransition from "../../components/common/PageTransition";
 import { Link } from "react-router-dom";
 
 export default function HelpCenter() {
   return (
+    <PageTransition>
     <PageWrapper>
       <div className="max-w-5xl mx-auto px-6 py-12">
         <h1 className="text-3xl font-semibold mb-2">Help Centre</h1>
@@ -34,6 +36,7 @@ export default function HelpCenter() {
         </div>
       </div>
     </PageWrapper>
+    </PageTransition>
   );
 }
 

@@ -1,8 +1,9 @@
 import PageWrapper from "../../components/common/PageWrapper";
 import { Link } from "react-router-dom";
-
+import PageTransition from "../../components/common/PageTransition";
 export default function HostHome() {
   return (
+    <PageTransition>
     <PageWrapper>
       <div className="max-w-5xl mx-auto px-6 py-12">
         <h1 className="text-3xl font-semibold mb-2">
@@ -37,6 +38,7 @@ export default function HostHome() {
         </div>
       </div>
     </PageWrapper>
+    </PageTransition>
   );
 }
 

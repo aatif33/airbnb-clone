@@ -1,7 +1,8 @@
 import PageWrapper from "../../components/common/PageWrapper";
-
+import PageTransition from "../../components/common/PageTransition";
 export default function AirCover() {
   return (
+    <PageTransition>
     <PageWrapper>
       <div className="bg-gray-50 min-h-screen">
         <div className="max-w-5xl mx-auto px-6 py-14">
@@ -50,5 +51,6 @@ export default function AirCover() {
         </div>
       </div>
     </PageWrapper>
+    </PageTransition>
   );
 }

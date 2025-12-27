@@ -6,7 +6,7 @@ import Navbar from "../components/layout/Navbar";
 import Footer from "../components/layout/Footer";
 import Chatbot from "../components/chatbot/Chatbot";
 import ProtectedRoute from "../components/common/ProtectedRoute";
-
+import BookingReceipt from "../pages/BookingReceipt";
 // Core pages
 import Home from "../pages/Home";
 import Experiences from "../pages/Experiences";
@@ -88,7 +88,7 @@ export default function App() {
               </ProtectedRoute>
             }
           />
-
+         <Route path="/booking-receipt/:id" element={<BookingReceipt />} />
           {/* Admin */}
           <Route path="/admin/experiences" element={<AdminExperience />} />
 
