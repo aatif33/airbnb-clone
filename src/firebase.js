@@ -1,15 +1,16 @@
 import { initializeApp } from "firebase/app";
 import { getAuth } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
+
 const firebaseConfig = {
-  apiKey: "AIzaSyC04EuI6CIdFL4A637ow-h2yd1hdxl4k04",
-  authDomain: "airbnb-clone-8833a.firebaseapp.com",
-  projectId: "airbnb-clone-8833a",
-  storageBucket: "airbnb-clone-8833a.firebasestorage.app",
-  messagingSenderId: "379431806744",
-  appId: "1:379431806744:web:2704f27a190cd240c3606d",
-  measurementId: "G-YXTXG24EQ0"
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
+  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
+  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
+  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
+  appId: import.meta.env.VITE_FIREBASE_APP_ID,
 };
+
 const app = initializeApp(firebaseConfig);
 export const auth = getAuth(app);
 export const db = getFirestore(app);
