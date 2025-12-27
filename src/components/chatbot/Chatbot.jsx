@@ -1,238 +1,190 @@
-import { useState, useRef, useEffect } from "react";
-import { useAuth } from "../../context/AuthContext";
-import { db } from "../../firebase";
-import {
-  collection,
-  getDocs,
-  query,
-  orderBy
-} from "firebase/firestore";
-import { GoogleGenerativeAI } from "@google/generative-ai";
-
-const genAI = new GoogleGenerativeAI(import.meta.env.VITE_GEMINI_API_KEY);
-const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 export default function Chatbot() {
-  const [confirmClose , setConfirmClose]=useState(false);
-  const { user } = useAuth();
   const [open, setOpen] = useState(false);
-  const [input, setInput] = useState("");
   const [messages, setMessages] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [showScrollBtn, setShowScrollBtn] = useState(false);
+  const [input, setInput] = useState("");
+  const [mode, setMode] = useState("menu"); // menu | support
+  const [typing, setTyping] = useState(false);
 
-  const chatRef = useRef(null);
-  const resetChatbot = () => {
-  setOpen(false);
-  setMessages([]);
-  setInput("");
-  setLoading(false);
-  setShowScrollBtn(false);
-  setConfirmClose(false);
-};
+  const navigate = useNavigate();
 
-  const add = (sender, text) =>
-    setMessages((m) => [...m, { sender, text }]);
-
-  /* 🔽 AUTO SCROLL ON NEW MESSAGE */
-  useEffect(() => {
-    if (chatRef.current) {
-      chatRef.current.scrollTop = chatRef.current.scrollHeight;
-    }
-  }, [messages]);
-
-  /* 👀 SHOW SCROLL BUTTON WHEN USER SCROLLS UP */
-  const handleScroll = () => {
-    const el = chatRef.current;
-    if (!el) return;
-
-    const isBottom =
-      el.scrollHeight - el.scrollTop - el.clientHeight < 50;
-
-    setShowScrollBtn(!isBottom);
+  const resetBot = () => {
+    setMessages([]);
+    setInput("");
+    setMode("menu");
+    setTyping(false);
   };
 
-  /* 🔍 SERVICES */
-  const handleServices = async () => {
-    const snap = await getDocs(collection(db, "services"));
-    if (snap.empty) {
-      add("bot", "❌ No services available right now.");
-      return;
-    }
-
-    let msg = "🛠️ Available services:\n";
-    snap.docs.forEach((d, i) => {
-      const s = d.data();
-      msg += `\n${i + 1}. ${s.title} – ₹${s.price}`;
-    });
-
-    add("bot", msg);
+  const closeBot = () => {
+    setOpen(false);
+    resetBot();
   };
 
-  /* 📦 MY SERVICES */
-  const handleMyServices = async () => {
-    if (!user) {
-      add("bot", "Please login to view your service bookings.");
-      return;
-    }
-
-    const ref = collection(db, "users", user.uid, "serviceBookings");
-    const snap = await getDocs(query(ref, orderBy("createdAt", "desc")));
-
-    if (snap.empty) {
-      add("bot", "You don’t have any service bookings yet.");
-      return;
-    }
-
-    let msg = "📦 Your service bookings:\n";
-    snap.docs.forEach((d, i) => {
-      const b = d.data();
-      msg += `\n${i + 1}. ${b.title} – ₹${b.price}`;
-    });
-
-    add("bot", msg);
+  const addUser = (text) => {
+    setMessages((prev) => [...prev, { sender: "user", text }]);
   };
 
-  /* 🤖 SEND */
-  const sendMessage = async () => {
+  const addBot = (text, delay = 800) => {
+    setTyping(true);
+    setTimeout(() => {
+      setMessages((prev) => [...prev, { sender: "bot", text }]);
+      setTyping(false);
+    }, delay);
+  };
+
+  const handleMenu = (option) => {
+    addUser(option);
+
+    switch (option) {
+      case "Explore services":
+        addBot("Sure! Taking you to services 🧰");
+        setTimeout(() => {
+          closeBot();
+          navigate("/services");
+        }, 1200);
+        break;
+
+      case "My bookings":
+        addBot(
+          "You can view all your trips and experiences in the Trips section 🧳"
+        );
+        break;
+
+      case "Cancellation policy":
+        addBot(
+          "Most experiences offer free cancellation up to 24–72 hours before the start time. You’ll see the exact policy on the booking page."
+        );
+        break;
+
+      case "Talk to support":
+        addBot(
+          "Sure 🙂 Please describe your issue in detail and I’ll help you."
+        );
+        setMode("support");
+        break;
+
+      default:
+        addBot("I didn’t understand that. Please choose an option.");
+    }
+  };
+
+  const handleSupportSend = () => {
     if (!input.trim()) return;
 
-    add("user", input);
-    const text = input.toLowerCase();
+    addUser(input);
     setInput("");
-    setLoading(true);
 
-    try {
-      if (text.includes("service")) {
-        text.includes("my")
-          ? await handleMyServices()
-          : await handleServices();
-      } else {
-        const res = await model.generateContent(input);
-        add("bot", res.response.text());
-      }
-    } catch {
-      add("bot", "❌ Something went wrong. Try again.");
-    }
+    addBot(
+      "Thanks for reaching out! A support agent will review this and get back to you soon."
+    );
 
-    setLoading(false);
+    setMode("menu");
   };
 
   return (
     <>
-      {/* FLOATING CHAT BUTTON */}
+      {/* Floating Button */}
       <button
         onClick={() => setOpen(true)}
-        className="fixed bottom-14 right-6 bg-rose-500 text-white p-4 rounded-full shadow-lg z-50"
+        className="fixed bottom-14 right-6 bg-rose-500 text-white rounded-full p-4 shadow-lg z-50 hover:scale-110 transition"
       >
         💬
       </button>
 
+      {/* Chat Window */}
       {open && (
         <div className="fixed bottom-24 right-6 w-80 bg-white rounded-xl shadow-xl border z-50 flex flex-col">
-
-          {/* HEADER */}
+          {/* Header */}
           <div className="bg-rose-500 text-white p-4 rounded-t-xl flex justify-between items-center">
             <span>Airbnb Assistant</span>
-
-            {/* ❌ EXIT BUTTON */}
-            <button
-              onClick={()=>setConfirmClose(true)}
-              className="text-white text-lg hover:opacity-80"
-            >
+            <button onClick={closeBot} className="text-lg">
               ✕
             </button>
           </div>
-         {confirmClose && (
-<div className="border-t bg-white p-3 animate-slideUp">
-<p className="text-sm text-gray-700 mb-2">
-Ask me about <span className="font-medium">services</span>
-<span className="font-medium">bookings</span>?
-<br />
 
-<span className="text-xs text-gray-500">
-Closing will clear this conversation.
-</span>
-
-</p>
-
-<div className="flex gap-2">
-
-<button
-onClick={() => setConfirmClose(false)}
-className="flex-1 border rounded-1g py-2 text-sm"
->
-Continue chat
-</button>
-<button
-onClick={resetChatbot}
-className="flex-1 bg-rose-500 text-white rounded-1g py-2 text-sm"
->
-Close
-</button>
-</div>
-</div>
-)}
-          {/* CHAT */}
-          <div
-            ref={chatRef}
-            onScroll={handleScroll}
-            className="flex-1 p-3 overflow-y-auto text-sm space-y-2 relative"
-          >
+          {/* Messages */}
+          <div className="p-4 space-y-3 flex-1 overflow-y-auto text-sm">
             {messages.length === 0 && (
               <p className="text-gray-500">
-                Hi 👋 Ask me about services or bookings
+                Hi 👋 How can I help you today?
               </p>
             )}
 
-            {messages.map((m, i) => (
+            {messages.map((msg, i) => (
               <div
                 key={i}
-                className={`p-2 rounded-lg max-w-[80%] ${
-                  m.sender === "user"
-                    ? "bg-rose-100 ml-auto"
-                    : "bg-gray-100"
+                className={`flex items-end gap-2 ${
+                  msg.sender === "user" ? "justify-end" : "justify-start"
                 }`}
               >
-                {m.text}
+                {msg.sender === "bot" && (
+                  <div className="w-7 h-7 rounded-full bg-rose-100 flex items-center justify-center text-xs">
+                    🤖
+                  </div>
+                )}
+
+                <div
+                  className={`p-2 rounded-lg max-w-[75%] ${
+                    msg.sender === "user"
+                      ? "bg-rose-100"
+                      : "bg-gray-100"
+                  }`}
+                >
+                  {msg.text}
+                </div>
               </div>
             ))}
 
-            {loading && (
-              <p className="text-xs text-gray-400">Thinking…</p>
+            {/* Typing Indicator */}
+            {typing && (
+              <div className="flex items-center gap-2 text-gray-400 text-xs">
+                <div className="w-7 h-7 rounded-full bg-rose-100 flex items-center justify-center">
+                  🤖
+                </div>
+                Assistant is typing…
+              </div>
             )}
 
-            {/* ⬇️ SCROLL TO BOTTOM */}
-            {showScrollBtn && (
+            {/* MENU */}
+            {mode === "menu" && !typing && (
+              <div className="grid grid-cols-2 gap-2 mt-3">
+                {[
+                  "Explore services",
+                  "My bookings",
+                  "Cancellation policy",
+                  "Talk to support",
+                ].map((item) => (
+                  <button
+                    key={item}
+                    onClick={() => handleMenu(item)}
+                    className="border rounded-lg p-2 hover:bg-gray-100 text-xs"
+                  >
+                    {item}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* SUPPORT INPUT */}
+          {mode === "support" && (
+            <div className="p-3 border-t flex gap-2">
+              <input
+                value={input}
+                onChange={(e) => setInput(e.target.value)}
+                placeholder="Type your message..."
+                className="flex-1 border rounded-lg px-3 py-2 text-sm"
+              />
               <button
-                onClick={() =>
-                  chatRef.current.scrollTo({
-                    top: chatRef.current.scrollHeight,
-                    behavior: "smooth",
-                  })
-                }
-                className="absolute bottom-3 right-3 bg-rose-500 text-white w-8 h-8 rounded-full shadow-md"
+                onClick={handleSupportSend}
+                className="bg-rose-500 text-white px-3 rounded-lg"
               >
-                ⬇️
+                Send
               </button>
-            )}
-          </div>
-
-          {/* INPUT */}
-          <div className="p-3 border-t flex gap-2">
-            <input
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
-              className="flex-1 border rounded-lg px-3 py-2 text-sm"
-              placeholder="Ask about services…"
-            />
-            <button
-              onClick={sendMessage}
-              className="bg-rose-500 text-white px-3 rounded-lg"
-            >
-              Send
-            </button>
-          </div>
+            </div>
+          )}
         </div>
       )}
     </>

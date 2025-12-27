@@ -33,7 +33,7 @@ export default function SearchBar({ compact, active, setActive }) {
       className={`
         relative mx-auto bg-white rounded-full z-50
         transition-all duration-300
-        ${compact ? "w-[380px] h-12" : "w-[720px] h-16"}
+        ${compact ? "w-[380px] h-12" : "w-[520px] h-16"}
         ${active ? "shadow-xl scale-100" : "shadow-md scale-95"}
       `}
     >
