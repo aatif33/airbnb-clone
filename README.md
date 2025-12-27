@@ -185,40 +185,6 @@ Ratings & reviews
 Notifications
 
 Analytics
-📸 Screenshots
-🏠 Home & Listings
-
-
-
-
-🎟️ Experiences
-
-
-
-
-
-
-🛎️ Services
-
-
-
-
-💳 Payment Flow (Mock)
-
-
-
-
-🧳 Trips & Bookings
-
-
-
-
-🤖 AI Chatbot
-
-
-
-
-📱 Mobile View
 
 👨‍💻 Author
 
